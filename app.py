@@ -43,16 +43,24 @@ def ask_claude(user_message):
     return message.content[0].text
 
 
-@app.route("/webhook", methods=["POST"])
+@app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     """Receive messages from SeaTalk and reply using Claude."""
+
+    # Handle GET verification requests
+    if request.method == "GET":
+        challenge = request.args.get("seatalk_challenge", "")
+        if challenge:
+            return jsonify({"seatalk_challenge": challenge}), 200
+        return "OK", 200
+
     data = request.json
 
     # Basic validation
     if not data:
         return jsonify({"status": "no data"}), 400
 
-    # Handle SeaTalk verification challenge
+    # Handle SeaTalk verification challenge (POST)
     if "seatalk_challenge" in data:
         return jsonify({"seatalk_challenge": data["seatalk_challenge"]}), 200
 
