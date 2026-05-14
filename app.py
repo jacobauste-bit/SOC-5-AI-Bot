@@ -52,6 +52,10 @@ def webhook():
     if not data:
         return jsonify({"status": "no data"}), 400
 
+    # Handle SeaTalk verification challenge
+    if "seatalk_challenge" in data:
+        return jsonify({"seatalk_challenge": data["seatalk_challenge"]}), 200
+
     try:
         # Extract message details from SeaTalk payload
         event = data.get("event", {})
